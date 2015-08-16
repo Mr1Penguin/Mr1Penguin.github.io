@@ -5,6 +5,13 @@
 <link rel="import" href="../../bower_components/paper-toggle-button/paper-toggle-button.html">
 <link rel="import" href="../../bower_components/paper-tooltip/paper-tooltip.html">
 <dom-module id="raid-calculator">
+    <style>
+        paper-toggle-button {
+            --paper-toggle-button-checked-bar-color: #3F51B5;
+            --paper-toggle-button-checked-button-color: #3F51B5;
+            --paper-toggle-button-checked-ink-color: #3F51B5;
+        }
+    </style>
     <template>
         <div>
             <paper-material elevation="1">
@@ -16,19 +23,37 @@
                     <label>Percent(100 * dmg/boss_hp)</label>
                     <input is="iron-input" bind-value="{{Percent}}" >
                 </paper-input-container>
-                <p>Reward: <span>{{calculate(ImmLvl, Percent)}}</span> HS</p>
+                Reward: <span>{{calculate(ImmLvl, Percent)}}</span> HS<br/>
                 <div style="display: inline">
-                    HP: <span>{{HP(ImmLvl)}}</span>
-                    <!--<div style="display: inline-block;" align="right">
-                        <paper-toggle-button ></paper-toggle-button>
-                        <paper-tooltip>Scientific or ingame format</paper-tooltip>
-                    </div>-->
+                    HP: <span>{{HP(ImmLvl, Format)}}</span>
+                    <div style="display: inline-block; float: right">
+                        <paper-toggle-button checked="{{Format}}" ></paper-toggle-button>
+                        <paper-tooltip style="width: 137px">Scientific or ingame format</paper-tooltip>
+                    </div>
                 </div>
             </paper-material>
             <a href="https://www.reddit.com/r/ClickerHeroes/comments/3gj93c/clans_faq/ctywuan">Formula</a>
         </div>
     </template>
     <script>
+        function scientific(Health) {
+            var hp_str = Health.toString();
+            if(/^\d\.\d{6,}e(\+|-)\d+$/.test(hp_str))
+                hp_str = "~" + hp_str.substr(0,7) + "e" + hp_str.split("e")[1];
+            return hp_str;
+        }
+        function ingame(Health) {
+            var suffixes = ["", "K", "M", "B", "T", "q", "Q", "s", "S", "O", "N", "d", "U", "D", "!", "@", "#", "$", "%",
+                "^", "&", "*"];
+            var index = 0;
+            var hp = Health;
+            while (hp.toString().length > 5 && index < suffixes.length ) {
+                index++;
+                hp = Math.round(hp / 1000);
+            }
+            if(index >= suffixes.length) return scientific(Health);
+            return hp.toString() + suffixes[index];
+        }
         Polymer({
             is: "raid-calculator",
             properties: {
@@ -39,6 +64,10 @@
                 Percent: {
                     type: Number,
                     value: 0
+                },
+                Format: {
+                    type: Boolean,
+                    value: false
                 }
             },
             calculate: function(ImmLvl, Percent) {
@@ -50,13 +79,11 @@
                     reward_str = "~" + reward_str.substr(0,7) + "e" + reward_str.split("e")[1];
                 return reward_str;
             },
-            HP: function(ImmLvl) {
+            HP: function(ImmLvl, Format) {
                 if (ImmLvl < 1 || isNaN(ImmLvl)) return 0;
                 var hp = Math.pow(2, ImmLvl - 1) * 1000;
-                var hp_str = hp.toString();
-                if(/^\d\.\d{6,}e(\+|-)\d+$/.test(hp_str))
-                    hp_str = "~" + hp_str.substr(0,7) + "e" + hp_str.split("e")[1];
-                return hp_str;
+                if(Format) return ingame(hp);
+                return scientific(hp);
             }
         });
     </script>
