@@ -17,6 +17,8 @@
     "polymer": "Polymer/polymer#^1.0.0",
     "paper-input": "PolymerElements/paper-input#~1.0.11",
     "paper-material": "PolymerElements/paper-material#~1.0.1",
-    "paper-styles": "PolymerElements/paper-styles#~1.0.11"
+    "paper-styles": "PolymerElements/paper-styles#~1.0.11",
+    "paper-toggle-button": "PolymerElements/paper-toggle-button#~1.0.6",
+    "paper-tooltip": "PolymerElements/paper-tooltip#~1.0.2"
   }
 }

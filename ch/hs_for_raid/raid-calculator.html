@@ -2,12 +2,9 @@
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/paper-material/paper-material.html">
 <link rel="import" href="../../bower_components/paper-styles/paper-styles.html">
+<link rel="import" href="../../bower_components/paper-toggle-button/paper-toggle-button.html">
+<link rel="import" href="../../bower_components/paper-tooltip/paper-tooltip.html">
 <dom-module id="raid-calculator">
-    <style>
-        div {
-            font-family: 'Roboto', 'Noto', sans-serif;
-        }
-    </style>
     <template>
         <div>
             <paper-material elevation="1">
@@ -20,7 +17,13 @@
                     <input is="iron-input" bind-value="{{Percent}}" >
                 </paper-input-container>
                 <p>Reward: <span>{{calculate(ImmLvl, Percent)}}</span> HS</p>
-                <p>HP: <span>{{HP(ImmLvl)}}</span></p>
+                <div style="display: inline">
+                    HP: <span>{{HP(ImmLvl)}}</span>
+                    <!--<div style="display: inline-block;" align="right">
+                        <paper-toggle-button ></paper-toggle-button>
+                        <paper-tooltip>Scientific or ingame format</paper-tooltip>
+                    </div>-->
+                </div>
             </paper-material>
             <a href="https://www.reddit.com/r/ClickerHeroes/comments/3gj93c/clans_faq/ctywuan">Formula</a>
         </div>
@@ -41,7 +44,7 @@
             calculate: function(ImmLvl, Percent) {
                 if (ImmLvl < 1 || isNaN(ImmLvl) || Percent < 0 || Percent > 100 || isNaN(Percent)) return 0;
                 var base = ImmLvl <= 12 ? ImmLvl : Math.ceil(Math.pow(2, ImmLvl - 1) / (100 + ImmLvl * 10));
-                var reward = Math.ceil(5 * base * (0.1 + 0.01 * Percent))
+                var reward = Math.ceil(0.5 * base + 5 * base * (0.01 * Percent))
                 var reward_str = reward.toString();
                 if(/^\d\.\d{6,}e(\+|-)\d+$/.test(reward_str))
                     reward_str = "~" + reward_str.substr(0,7) + "e" + reward_str.split("e")[1];
