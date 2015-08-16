@@ -1,0 +1,21 @@
+{
+  "name": "Mr1Penguin.github.io",
+  "version": "1.0.0",
+  "homepage": "https://github.com/Mr1Penguin/Mr1Penguin.github.io",
+  "authors": [
+    "Igor Sharapov <igorsharapov@outlook.com>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.0.0",
+    "paper-input": "PolymerElements/paper-input#~1.0.11",
+    "paper-material": "PolymerElements/paper-material#~1.0.1"
+  }
+}

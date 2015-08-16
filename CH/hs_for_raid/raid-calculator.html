@@ -1,0 +1,42 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-material/paper-material.html">
+<dom-module id="raid-calculator">
+    <template>
+        <paper-material elevation="1">
+            <paper-input-container>
+                <label>Immortal Lvl</label>
+                <input is="iron-input" bind-value="{{ImmLvl}}" >
+            </paper-input-container>
+            <paper-input-container>
+                <label>Percent(100 * dmg/boss_hp)</label>
+                <input is="iron-input" bind-value="{{Percent}}" >
+            </paper-input-container>
+            <p>Reward: <span>{{calculate(ImmLvl, Percent)}}</span> HS</p>
+        </paper-material>
+    </template>
+    <script>
+        Polymer({
+            is: "raid-calculator",
+            properties: {
+                ImmLvl: {
+                    type: Number,
+                    value: 1
+                },
+                Percent: {
+                    type: Number,
+                    value: 0
+                }
+            },
+            calculate: function(ImmLvl, Percent) {
+                if (ImmLvl < 1 || isNaN(ImmLvl) || Percent < 0 || Percent > 100 || isNaN(Percent)) return 0;
+                var base = ImmLvl <= 12 ? ImmLvl : Math.ceil(Math.pow(2, ImmLvl - 1) / (100 + ImmLvl * 10));
+                var reward = Math.ceil(5 * base * (0.1 + 0.01 * Percent))
+                var reward_str = reward.toString();
+                if(/^\d\.\d{6,}e(\+|-)\d+$/.test(reward_str))
+                    reward_str = "~" + reward_str.substr(0,7) + "e" + reward_str.split("e")[1];
+                return reward_str;
+            }
+        });
+    </script>
+</dom-module>
