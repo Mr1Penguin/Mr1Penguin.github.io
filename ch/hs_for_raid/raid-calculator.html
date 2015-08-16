@@ -4,6 +4,7 @@
 <link rel="import" href="../../bower_components/paper-styles/paper-styles.html">
 <link rel="import" href="../../bower_components/paper-toggle-button/paper-toggle-button.html">
 <link rel="import" href="../../bower_components/paper-tooltip/paper-tooltip.html">
+<link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
 <dom-module id="raid-calculator">
     <style>
         paper-toggle-button {
@@ -20,10 +21,14 @@
                     <input is="iron-input" bind-value="{{ImmLvl}}" >
                 </paper-input-container>
                 <paper-input-container>
-                    <label>Percent(100 * dmg/boss_hp)</label>
-                    <input is="iron-input" bind-value="{{Percent}}" >
+                    <label>{{CurrentDamageTypeString(DamageType)}}</label>
+                    <input is="iron-input" bind-value="{{Damage}}" >
+                    <div suffix style="display: inline-block;">
+                        <paper-checkbox checked="{{DamageType}}"></paper-checkbox>
+                        <paper-tooltip style="width: 200px;">Percent or absolute damage</paper-tooltip>
+                    </div>
                 </paper-input-container>
-                Reward: <span>{{calculate(ImmLvl, Percent)}}</span> HS<br/>
+                Reward: <span>{{calculate(ImmLvl, Damage, DamageType)}}</span> HS<br/>
                 <div style="display: inline">
                     HP: <span>{{HP(ImmLvl, Format)}}</span>
                     <div style="display: inline-block; float: right">
@@ -62,19 +67,25 @@
                     type: Number,
                     value: 1
                 },
-                Percent: {
+                Damage: {
                     type: Number,
                     value: 0
                 },
                 Format: {
                     type: Boolean,
                     value: false
+                },
+                DamageType: {
+                    type: Boolean,
+                    value: false
                 }
             },
-            calculate: function(ImmLvl, Percent) {
-                if (ImmLvl < 1 || isNaN(ImmLvl) || Percent < 0 || Percent > 100 || isNaN(Percent)) return 0;
+            calculate: function(ImmLvl, Damage, DamageType) {
+                if(isNaN(ImmLvl) || isNaN(Damage) || ImmLvl < 1 || Damage < 0) return 0;
+                if (!DamageType && Damage > 100) return 0;
                 var base = ImmLvl <= 12 ? ImmLvl : Math.ceil(Math.pow(2, ImmLvl - 1) / (100 + ImmLvl * 10));
-                var reward = Math.ceil(0.5 * base + 5 * base * (0.01 * Percent))
+                var percent = DamageType ? Math.min(Damage/(Math.pow(2, ImmLvl - 1) * 1000) * 100, 100) : Damage;
+                var reward = Math.ceil(0.5 * base + 5 * base * (0.01 * percent))
                 var reward_str = reward.toString();
                 if(/^\d\.\d{6,}e(\+|-)\d+$/.test(reward_str))
                     reward_str = "~" + reward_str.substr(0,7) + "e" + reward_str.split("e")[1];
@@ -85,6 +96,10 @@
                 var hp = Math.pow(2, ImmLvl - 1) * 1000;
                 if(Format) return ingame(hp);
                 return scientific(hp);
+            },
+            CurrentDamageTypeString: function(DamageType) {
+                if(DamageType) return "Absolute";
+                return "Percent(100 * dmg/boss_hp)";
             }
         });
     </script>
