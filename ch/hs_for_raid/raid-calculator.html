@@ -1,19 +1,28 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../../bower_components/paper-styles/paper-styles.html">
 <dom-module id="raid-calculator">
+    <style>
+        div {
+            font-family: 'Roboto', 'Noto', sans-serif;
+        }
+    </style>
     <template>
-        <paper-material elevation="1">
-            <paper-input-container>
-                <label>Immortal Lvl</label>
-                <input is="iron-input" bind-value="{{ImmLvl}}" >
-            </paper-input-container>
-            <paper-input-container>
-                <label>Percent(100 * dmg/boss_hp)</label>
-                <input is="iron-input" bind-value="{{Percent}}" >
-            </paper-input-container>
-            <p>Reward: <span>{{calculate(ImmLvl, Percent)}}</span> HS</p>
-        </paper-material>
+        <div>
+            <paper-material elevation="1">
+                <paper-input-container>
+                    <label>Immortal Lvl</label>
+                    <input is="iron-input" bind-value="{{ImmLvl}}" >
+                </paper-input-container>
+                <paper-input-container>
+                    <label>Percent(100 * dmg/boss_hp)</label>
+                    <input is="iron-input" bind-value="{{Percent}}" >
+                </paper-input-container>
+                <p>Reward: <span>{{calculate(ImmLvl, Percent)}}</span> HS</p>
+            </paper-material>
+            <a href="https://www.reddit.com/r/ClickerHeroes/comments/3gj93c/clans_faq/ctywuan">Formula</a>
+        </div>
     </template>
     <script>
         Polymer({
