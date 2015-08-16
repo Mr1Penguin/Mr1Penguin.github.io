@@ -47,11 +47,12 @@
                 "^", "&", "*"];
             var index = 0;
             var hp = Health;
-            while (hp.toString().length > 5 && index < suffixes.length ) {
-                index++;
-                hp = Math.round(hp / 1000);
-            }
-            if(index >= suffixes.length) return scientific(Health);
+            if(hp <= 9.9999e+67)
+                while (hp.toString().length > 5) {
+                  index++;
+                  hp = Math.round(hp / 1000);
+                }
+            else return scientific(Health);
             return hp.toString() + suffixes[index];
         }
         Polymer({
