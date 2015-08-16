@@ -5,15 +5,18 @@
     <link rel="stylesheet" type="text/css" href="style.css">
     <script src="../../bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
     <link rel="import" href="raid-calculator.html">
+    <link rel="stylesheet" href="http://css-spinners.com/css/spinner/plus.css" type="text/css">
     <title>HS reward calculator</title>
 </head>
 <body>
 <div id="rc">
-    <div id="loading">Loading...</div>
+    <div id="loader" class="plus-loader">
+        Loading…
+    </div>
     <raid-calculator></raid-calculator>
     <script>
         window.addEventListener('WebComponentsReady', function(e) {
-            document.getElementById("rc").removeChild(document.getElementById("loading"));
+            document.getElementById("rc").removeChild(document.getElementById("loader"));
         });
     </script>
 </div>
