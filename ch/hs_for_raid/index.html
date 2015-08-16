@@ -9,7 +9,13 @@
 </head>
 <body>
 <div id="rc">
+    <div id="loading">Loading...</div>
     <raid-calculator></raid-calculator>
+    <script>
+        window.addEventListener('WebComponentsReady', function(e) {
+            document.getElementById("rc").removeChild(document.getElementById("loading"));
+        });
+    </script>
 </div>
 </body>
 </html>
