@@ -34,8 +34,12 @@
                         <paper-tooltip style="width: 142px;">Percent or absolute damage</paper-tooltip>
                     </div>
                 </paper-input-container>
-                <!-- add new p-i-c with lifetime HS gain and use it. if reward > 0.1 * lhsg then change it and change reward color to red -->
-                Reward: <span>{{calculate(ImmLvl, Damage)}}</span> HS<br/>
+                <paper-input-container>
+                    <label>Lifetime HS gain</label>
+                    <input is="iron-input" bind-value="{{LHSG}}">
+                    <paper-tooltip>Left empty to ignore</paper-tooltip>
+                </paper-input-container>
+                Reward: <span id="reward">{{calculate(ImmLvl, Damage, LHSG)}}</span> HS<br/>
                 <div style="display: inline">
                     HP: <span>{{HP(ImmLvl, Format)}}</span>
                     <div style="display: inline-block; float: right">
@@ -49,6 +53,10 @@
             <a id="changelogbtn" href="#" on-click="changelogVisibility">Changelog</a>
             <div id="changelog" style="display: none">
                 <dl>
+                    <dt>v1.3</dt>
+                    <ul>
+                        <li>10% HS cap was included in calculations</li>
+                    </ul>
                     <dt>v1.2.1</dt>
                     <ul>
                         <li>Fix point processing when checking the numbers</li>
@@ -98,6 +106,10 @@
                     type: Number,
                     value: 0
                 },
+                LHSG: {
+                    type: Number,
+                    value: null
+                },
                 Format: {
                     type: Boolean,
                     value: false
@@ -107,9 +119,11 @@
                     value: false
                 }
             },
-            calculate: function(ImmLvl, argDamage) {
+            calculate: function(ImmLvl, argDamage, LHSG) {
                 if(isNaN(ImmLvl)) ImmLvl = this.ImmLvl = ImmLvl.replace(/\D/g,'');
                 if(/\./.test(ImmLvl)) ImmLvl = this.ImmLvl = ImmLvl.replace(/\./g,'');
+                if(isNaN(LHSG)) LHSG = this.LHSG = LHSG.replace(/\D/g,'');
+                if(/\./.test(LHSG)) LHSG = this.LHSG = LHSG.replace(/\./g,'');
                 function process( str ) {
                     return str.replace( /^([^.]*\.)(.*)$/, function ( a, b, c ) {
                         return b + c.replace( /\./g, '' );
@@ -123,6 +137,11 @@
                 var base = ImmLvl <= 12 ? ImmLvl : Math.ceil(Math.pow(2, ImmLvl - 1) / (100 + ImmLvl * 10));
                 var percent = this.DamageType ? Math.min(argDamage/(health) * 100, 100) : argDamage;
                 var reward = Math.ceil(0.5 * base + 5 * base * (0.01 * percent))
+                document.getElementById("reward").style.color = "black";
+                if(LHSG && reward > 0.1 * LHSG) {
+                    reward = Math.ceil(0.1 * LHSG);
+                    document.getElementById("reward").style.color = "red";
+                }
                 var reward_str = reward.toString();
                 if(/^\d\.\d{6,}e(\+|-)\d+$/.test(reward_str))
                     reward_str = "~" + reward_str.substr(0,7) + "e" + reward_str.split("e")[1];
