@@ -11,6 +11,13 @@
             --paper-toggle-button-checked-button-color: #3F51B5;
             --paper-toggle-button-checked-ink-color: #3F51B5;
         }
+        dt {
+            font-weight: bold;
+        }
+        #changelogbtn {
+            text-decoration: none;
+            color:black
+        }
     </style>
     <template>
         <div>
@@ -23,20 +30,36 @@
                     <label>{{CurrentDamageTypeString(DamageType)}}</label>
                     <input is="iron-input" bind-value="{{Damage}}" >
                     <div suffix style="display: inline-block;">
-                        <paper-toggle-button checked="{{DamageType}}"></paper-toggle-button>
+                        <paper-toggle-button checked="{{DamageType}}" on-change="dmgFormatChanged"></paper-toggle-button>
                         <paper-tooltip style="width: 142px;">Percent or absolute damage</paper-tooltip>
                     </div>
                 </paper-input-container>
-                Reward: <span>{{calculate(ImmLvl, Damage, DamageType)}}</span> HS<br/>
+                Reward: <span>{{calculate(ImmLvl, Damage)}}</span> HS<br/>
                 <div style="display: inline">
                     HP: <span>{{HP(ImmLvl, Format)}}</span>
                     <div style="display: inline-block; float: right">
-                        <paper-toggle-button checked="{{Format}}" ></paper-toggle-button>
+                        <paper-toggle-button checked="{{Format}}"></paper-toggle-button>
                         <paper-tooltip style="width: 137px">Scientific or ingame format</paper-tooltip>
                     </div>
                 </div>
             </paper-material>
             <a href="https://www.reddit.com/r/ClickerHeroes/comments/3gj93c/clans_faq/ctywuan">Formula</a>
+            <br/>
+            <a id="changelogbtn" href="#" on-click="changelogVisibility">Changelog</a>
+            <div id="changelog" style="display: none">
+                <dl>
+                    <dt>v1.2</dt>
+                    <ul>
+                        <li>Added Changelog</li>
+                        <li>The value of damage is always corresponds to the current format</li>
+                        <li>The value of damage out of acceptable boundaries is automatically replaced with the nearest allowable</li>
+                    </ul>
+                    <dt>v1.0 and v1.1</dt>
+                    <ul>
+                        <li>Initial release and some addictions to interface</li>
+                    </ul>
+                </dl>
+            </div>
         </div>
     </template>
     <script>
@@ -75,15 +98,19 @@
                     value: false
                 },
                 DamageType: {
-                    type: Boolean,
+                    type: Boolean, //true = absolute
                     value: false
                 }
             },
-            calculate: function(ImmLvl, Damage, DamageType) {
-                if(isNaN(ImmLvl) || isNaN(Damage) || ImmLvl < 1 || Damage < 0) return 0;
-                if (!DamageType && Damage > 100) return 0;
+            calculate: function(ImmLvl, argDamage) {
+                if(isNaN(ImmLvl)) ImmLvl = this.ImmLvl = ImmLvl.replace(/\D/g,'');
+                if(isNaN(argDamage)) argDamage = this.Damage = argDamage.replace(/\D/g,'');
+                var health = Math.pow(2, ImmLvl - 1) * 1000;
+                if(argDamage < 0) argDamage = this.Damage = 0;
+                var maxDmg = this.DamageType ? health : 100;
+                if(argDamage > maxDmg) argDamage = this.Damage = maxDmg;
                 var base = ImmLvl <= 12 ? ImmLvl : Math.ceil(Math.pow(2, ImmLvl - 1) / (100 + ImmLvl * 10));
-                var percent = DamageType ? Math.min(Damage/(Math.pow(2, ImmLvl - 1) * 1000) * 100, 100) : Damage;
+                var percent = this.DamageType ? Math.min(argDamage/(health) * 100, 100) : argDamage;
                 var reward = Math.ceil(0.5 * base + 5 * base * (0.01 * percent))
                 var reward_str = reward.toString();
                 if(/^\d\.\d{6,}e(\+|-)\d+$/.test(reward_str))
@@ -99,6 +126,23 @@
             CurrentDamageTypeString: function(DamageType) {
                 if(DamageType) return "Absolute";
                 return "Percent(100 * dmg/boss_hp)";
+            },
+            dmgFormatChanged: function() {
+                var health = Math.pow(2, this.ImmLvl - 1) * 1000;
+                if (this.DamageType) {
+                    //num -> %
+                    this.Damage *= health * 0.01;
+                } else {
+                    //% -> num
+                    this.Damage *= 100 / health;
+                }
+                this.calculate(this.ImmLvl, this.Damage);
+            },
+            changelogVisibility: function() {
+                var chnglg = document.getElementById("changelog");
+                chnglg.style.display = chnglg.style.display == "none" ? "block" : "none";
+                var chbtn = document.getElementById("changelogbtn");
+                chbtn.innerHTML = chbtn.innerHTML == "Hide" ? "Changelog" : "Hide";
             }
         });
     </script>
