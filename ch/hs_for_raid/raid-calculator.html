@@ -34,6 +34,7 @@
                         <paper-tooltip style="width: 142px;">Percent or absolute damage</paper-tooltip>
                     </div>
                 </paper-input-container>
+                <!-- add new p-i-c with lifetime HS gain and use it. if reward > 0.1 * lhsg then change it and change reward color to red -->
                 Reward: <span>{{calculate(ImmLvl, Damage)}}</span> HS<br/>
                 <div style="display: inline">
                     HP: <span>{{HP(ImmLvl, Format)}}</span>
@@ -48,6 +49,10 @@
             <a id="changelogbtn" href="#" on-click="changelogVisibility">Changelog</a>
             <div id="changelog" style="display: none">
                 <dl>
+                    <dt>v1.2.1</dt>
+                    <ul>
+                        <li>Fix dot processing on number checking</li>
+                    </ul>
                     <dt>v1.2</dt>
                     <ul>
                         <li>Added Changelog</li>
@@ -104,7 +109,13 @@
             },
             calculate: function(ImmLvl, argDamage) {
                 if(isNaN(ImmLvl)) ImmLvl = this.ImmLvl = ImmLvl.replace(/\D/g,'');
-                if(isNaN(argDamage)) argDamage = this.Damage = argDamage.replace(/\D/g,'');
+                if(/\./.test(ImmLvl)) ImmLvl = this.ImmLvl = ImmLvl.replace(/\./g,'');
+                function process( str ) {
+                    return str.replace( /^([^.]*\.)(.*)$/, function ( a, b, c ) {
+                        return b + c.replace( /\./g, '' );
+                    });
+                }
+                if(isNaN(argDamage)) argDamage = this.Damage = process(argDamage.replace(/[^.0-9]/g,''));
                 var health = Math.pow(2, ImmLvl - 1) * 1000;
                 if(argDamage < 0) argDamage = this.Damage = 0;
                 var maxDmg = this.DamageType ? health : 100;
