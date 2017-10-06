@@ -1,0 +1,30 @@
+<html>
+    <head>
+        <meta charset="UTF-8" />
+    </head>
+    <body>
+        <h1>Live Tile information</h1>
+
+        <h4>Eng:</h4>
+
+        <p>First question: "Why log out can happen?"</p>
+
+        <h5>The answer:</h5>
+
+        <p>Application needs use two tokens: refresh and access, to work with DeviantArt. First one has one-time use to get second. Access token give ability to make requests to get data from DeviantArt. Whenever application make request to get new access token server returns new access and refresh tokens. When you use main application(Da-Art) you may predict that you going to enter into area with unstable internet connection and open application when you sure that internet is good enough. Live tile updater can't predict if it lose connection while it works.</p>
+
+        <p>So there is a chance updater successfully asks for new tokens but lose internet connection before it gets response. DeviantArt will generate new tokens and application would have invalid ones.</p>
+
+        <h5>Is there is a solution?</h5>
+
+        <p>Yes, I have an idea.</p>
+
+        <p>I can get a server that would contain tokens and asks DeviantArt for new tokens for Live Tile updater.</p>
+
+        <p>The main problem is security. Once I find a good solution to hold tokens on server I'll implement this idea.</p>
+
+        <h4>Ru:</h4>
+
+        <p>Later</p>
+    </body>
+</html>
